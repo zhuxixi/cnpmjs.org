@@ -1,177 +1,146 @@
-cnpmjs.org
-=======
+# 内网搭建基于CNPM+Mysql的NPM包私服
+## 前言
+目前8.10LTS版本的node和5.6版本的NPM环境，在使用`npm adduser`命令注册CNPM私服用户时存在bug，显示注册成功，其实是失败了，解决方案是使用9.2.0版本node与5.5.1的npm环境。  
 
-[![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][codecov-image]][codecov-url]
-[![David deps][david-image]][david-url]
-[![Known Vulnerabilities][snyk-image]][snyk-url]
-[![npm download][download-image]][download-url]
+CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用过，而且纯内网环境使用很麻烦，网上教程也少，所以数据库选型为Mysql 5.7。  
 
-[npm-image]: http://cnpmjs.org/badge/v/cnpmjs.org.svg?style=flat-square
-[npm-url]: http://cnpmjs.org/package/cnpmjs.org
-[travis-image]: https://img.shields.io/travis/cnpm/cnpmjs.org.svg?style=flat-square
-[travis-url]: https://travis-ci.org/cnpm/cnpmjs.org
-[codecov-image]: https://codecov.io/gh/cnpm/cnpmjs.org/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/cnpm/cnpmjs.org
-[david-image]: https://img.shields.io/david/cnpm/cnpmjs.org.svg?style=flat-square
-[david-url]: https://david-dm.org/cnpm/cnpmjs.org
-[snyk-image]: https://snyk.io/test/npm/cnpmjs.org/badge.svg?style=flat-square
-[snyk-url]: https://snyk.io/test/npm/cnpmjs.org
-[download-image]: https://img.shields.io/npm/dm/cnpmjs.org.svg?style=flat-square
-[download-url]: https://npmjs.org/package/cnpmjs.org
-
-![logo](https://raw.github.com/cnpm/cnpmjs.org/master/logo.png)
-
-## What is this?
-
-Private npm registry and web for Enterprise, base on [koa](http://koajs.com/),
-MySQL and [Simple Store Service](https://github.com/cnpm/cnpmjs.org/wiki/NFS-Guide).
-
-Our goal is to provide a low cost maintenance and easy to use solution for private npm.
-
-## What can you do with `cnpmjs.org`
-
-* Build a private npm for your own enterprise. ([alibaba](http://www.alibaba.com/) is using `cnpmjs.org` now)
-* Build a mirror NPM. (we use it to build a mirror in China: [cnpmjs.org](http://cnpmjs.org/))
-* Build a completely independent NPM registry to store whatever you like.
-
-## Features
-
-* **Support "scoped" packages**: [npm/npm#5239](https://github.com/npm/npm/issues/5239)
-* **Support [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing)**
-* **Simple to deploy**: only need `mysql` and a [simple store system](https://github.com/cnpm/cnpmjs.org/wiki/NFS-Guide).
-You can get the source code through `npm` or `git`.
-* **Low cost and easy maintenance**: `package.json` info store in MySQL, MariaDB, SQLite or PostgreSQL databases,
-tarball(tgz file) store in CDN or other store systems.
-* **Automatic synchronization**: automatic synchronization from any registry specified, support two sync modes:
-  - Sync all modules from a specified registry, like [npm registry](http://registry.npmjs.org).
-  - Only sync the modules that exists in your own registry.
-* **Manual synchronization**: automatic synchronization may has little delay, but you can syn immediately by manually.
-* **Customized client**: we provide a client [cnpm](https://github.com/cnpm/cnpm)
-to extend `npm` with more features(`sync` command, [gzip](https://github.com/npm/npm-registry-client/pull/40) support).
-And it easy to wrap for your own registry which build with `cnpmjs.org`.
-* **Compatible with NPM client**: you can use the origin NPM client with `cnpmjs.org`,
-only need to change the registry in config. Even include manual synchronization (through `install` command).
-* **Version badge**: base on [shields.io](http://shields.io/) ![cnpm-badge](http://cnpmjs.org/badge/v/cnpmjs.org.svg?style=flat-square)
-* **Support http_proxy**: if you're behind firewall, need to request through http proxy
-
-**PROTIP** Be sure to read [Migrating from 1.x to 2.x](https://github.com/cnpm/cnpmjs.org/wiki/Migrating-from-1.x-to-2.x)
-as well as [New features in 2.x](https://github.com/cnpm/cnpmjs.org/wiki/New-features-in-2.x).
-
-## Getting Start
-
-* [Deploy a private npm registry in 5 minutes](https://github.com/cnpm/cnpmjs.org/wiki/Deploy-a-private-npm-registry-in-5-minutes)
-* @[dead-horse](https://github.com/dead-horse): [What is cnpm?](http://deadhorse.me/slides/cnpmjs.html)
-* install and deploy cnpmjs.org through npm: [examples](https://github.com/cnpm/custom-cnpm-example)
-* Mirror NPM in China: [cnpmjs.org](http://cnpmjs.org)
-* cnpm client: [cnpm](https://github.com/cnpm/cnpm), `npm install -g cnpm`
-* [How to deploy cnpmjs.org](https://github.com/cnpm/cnpmjs.org/wiki/Deploy)
-* [Sync packages through `http_proxy`](https://github.com/cnpm/cnpmjs.org/wiki/Sync-packages-through-http_proxy)
-* [wiki](https://github.com/cnpm/cnpmjs.org/wiki)
-
-## Develop on your local machine
-
-### Dependencies
-
-* [node](http://nodejs.org) >= 4.3.1
-* Databases: only required one type
-  * [sqlite3](https://npm.taobao.org/package/sqlite3) >= 3.0.2, we use `sqlite3` by default
-  * [MySQL](http://dev.mysql.com/downloads/) >= 0.5.0, include `mysqld` and `mysql cli`. I test on `mysql@5.6.16`.
-  * MariaDB
-  * PostgreSQL
-
-### Clone codes and run test
-
-```bash
-# clone from git
-$ git clone https://github.com/cnpm/cnpmjs.org.git
-
-# install dependencies
-$ make install
-
-# test
-$ make test
-
-# coverage
-$ make test-cov
-
-# update dependencies
-$ make autod
-
-# start server with development mode
-$ make dev
-```
-
-### Dockerized cnpmjs.org Installation Guide
-
-Cnpmjs.org shipped with a simple but pragmatic Docker Compose configuration.With the configuration, you can set up a MySQL backed cnpmjs.org instance by executing just one command on Docker installed environment.
-
-#### Preparation
-
-* [Install Docker](https://www.docker.com/community-edition)
-* [Install Docker Compose](https://docs.docker.com/compose/install/) (Docker for Mac, Docker for Windows include Docker Compose, so most Mac and Windows users do not need to install Docker Compose separately)
-* (Optional) Speed up Docker images downloading by setting up [Docker images download accelerator](https://yq.aliyun.com/articles/29941)
+具体操作流程请往下看。
 
 
-#### Dockerized cnpmjs.org control command 
-
-Make sure your current working directory is the root of this GitHub repository.
-
-##### Run dockerized cnpmjs.org
-
-```bash
- $docker-compose up
- ```
+## 准备工作 
+### 在本机安装node、npm
+1. 参照你本机的操作系统版本在本机安装[node、npm环境]
+2. 在终端或bash中输入`npm install n -g`安装node环境切换工具[n模块]
+3. 在终端或bash中输入`n -V`查看n模块版本，如果成功显示版本号则安装成功
+4. 在终端或bash中输入`n 9.2.0`安装 9.2.0 node环境
+5. 在终端或bash中输入`n` 显示node环境列表，通过↑↓按键选择刚刚安装的9.2.0版本
+6. 在终端或bash中输入`node -v`查看版本是否切换成功
+7. 在终端或bash中输入以下命令重新安装4.5.1版本的cnpm工具  
+	* `npm uninstall -g cnpm`
+	* `npm install -g cnpm@4.5.1`  
+8. 以上，node环境安装完毕  
  
-This command will build a Docker image using the current code of repository. Then set up a dockerized MySQL instance with data initialized. After Docker container running, you can access your cnpmjs.org web portal at http://127.0.0.1:7002 and npm register at http://127.0.0.1:7001.
+### 在服务器安装mysql数据库
+1. 参照服务器的操作系统版本安装[Mysql数据库]
+2. 在终端或bash中输入 `vi /etc/my.cnf`打开Mysql配置文件  
+3. 在配置文件的mysqld配置项下面增加`skip-grant-tables`，否则你要去日志中寻找首次登陆的默认root密码
+4. 在终端或bash中输入`systemctl restart mysqld.service`重启mysql服务
+5. 在终端或bash中输入`mysql`无密码登陆
+6. 在Mysql中输入以下命令修改root用户密码(首字母大写，必须包含一个特殊字符)
+  * `update user set authentication_string=password('Chinalife001!')where user='root';`
+  * `flush privileges;` 
+7. 回到终端输入`systemctl restart mysqld.service`重启
+8.  在终端或bash中输入`mysql -uroot -p`，会提示你输入密码，然后登录mysql。
+9. 在Mysql中输入以下命令配置mysql远程连接权限
+	* `use mysql;`
+	* `update user set host = '%' where user = 'root';`
+	* `FLUSH RIVILEGES;`
+10. 如果远程访问还是不成功，查看以下my.cnf中是否写了bind-address如果有，就注释掉或改成`bind-address=0.0.0.0`，一般mysql 5.7以后的版本都没配置bind-address了。如果还是不行，就查看selinux状态和iptables是不是有规则(一般centos/redhat 7+的版本iptables都默认不安装了)
+11. 如果还是不行，就报警吧
+12. 以上，mysql安装完毕  
 
-#### Run cnpmjs.org in the backend
+### 在本机下载NPM依赖
+1. 在[淘宝cnpm项目github主页]下载Master分支代码
+2. 终端进入本地cnpm项目目录，执行`npm install`下载项目所需npm包
+3. 在项目目录中创建logs、nfs文件夹
+	* 在项目目录中`mkdir logs`
+	* 在项目目录中`mkdir nfs`
+4. 终端执行`npm start`启动项目
+5. 终端执行`curl 127.0.0.1:7002`看看启动是否成功
+6. 如果启动成功，将项目目录上传至内网服务器
 
-```bash
-$docker-compose up -d
-```
+## 部署CNPM
 
-#### Rebuild cnpmjs.org Docker image
+### 服务器配置CNPM并启动
+1. 上传项目至服务器并终端进入项目所在目录
+2. 终端输入`pwd`查看当前路径
+3. 终端输入`vi config\index.js`编辑cnpm配置文件，配置文件修改视需求而定，如果要搭建一个使用群体庞大的内部私服，还是要仔细研读一下。如果这个私服只是小团队内部使用，可以参考以下配置
+4. 修改配置文件中 `bindingHost: '0.0.0.0'`
+5. 修改配置文件中 ` logdir: '/你的CNPM项目文件夹在服务器中的路径/log'`  
+6. 修改配置文件中 database相关配置项，如下所示
+  	
+	```
+	database: {
+    db: 'cnpm',
+    username: 'root',
+    password: 'Chinalife001!',
+    dialect: 'mysql',
+    host: '127.0.0.1',
+    port: 3306,
+    pool: {
+      maxConnections: 10,
+      minConnections: 0,
+      maxIdleTime: 30000
+    },
+    storage: path.join(dataDir, 'data.sqlite'),
+    logging: !!process.env.SQL_DEBUG,
+  }  
+  ```
+  
+7. 修改配置文件中npm包存储路径，如下所示
 
-```bash
-$docker-compose build
-```
+	```
+	nfs: require('fs-cnpm')({
+    	dir: '/你的CNPM项目文件夹在服务器中的路径/nfs'
+  	}),
+	```
+8. 修改配置文件中`registryHost: '服务器IP地址:7001'`  
+9. 配置文件修改完毕之后在在终端输入`npm start`和`curl 服务器IP地址:7002`查看CNPM是否启动成功
+10. 浏览器中输入`服务器IP地址:7002`看看有没有CNPM页面
+11. 进入项目所在目录/docs文件夹找到db.sql文件，此文件为mysql建库脚本
+12. 在终端中执行(不要登录mysql执行)以下代码
+	
+	```
+	mysql -uroot -pChinalife001! -e 'DROP DATABASE IF EXISTS cnpm;' &&\
+	mysql -uroot -pChinalife001! -e 'CREATE DATABASE cnpm;' &&\
+	mysql -uroot -pChinalife001! 'cnpm' < /你的CNPM项目文件夹在服务器中的路径/docs/db.sql &&\
+	mysql -uroot -pChinalife001! 'cnpm' -e 'show tables;'
+	```
+13. 继续用上面的命令重启mysql
+14. 在CNPM项目目录下执行`npm restart`重启CNPM私服
 
-#### Remove current dockerized cnpmjs.org instance
+### 配置CNPM源
 
-The current configuration set 2 named Docker Volume for your persistent data. If you haven't change the repository directory name, them will be "cnpmjsorg_cnpm-files-volume" & "cnpmjsorg_cnpm-db-volume".
+1. 打开你自己的node项目目录(有package.json文件的目录)输入以下命令来切换CNPM源为我们刚刚搭建的私服
+	* `cnpm config set registry="http://服务器ID地址:7001"`   
+	
+### 创建私服用户
+  
+1. 在终端中输入以下命令创建私服用户
 
-Be Careful, the following commands will remove them.
+	```
+	cnpm adduser
+	输入用户名:test001
+	输入密码:test001
+	输入邮箱:123@qq.com
+	终端显示登录成功
+	cnpm whoami
+	显示test001
+	cnpm logout 登出
+	cnpm login 登录
+	输入用户名:test001
+	输入密码:test001
+	输入邮箱:123@qq.com
+	终端显示登录成功
+	```
+2. 登录mysql执行以下代码查看用户是否创建成功
+	
+	```
+	use cnpm
+	select * from user;
+	```
+	> 如果你的前面的操作都很顺利，CNPM.USER表中应该有test001的记录
+	
+### 上传和安装私包
 
-```bash
-$docker-compose rm 
-$docker volume rm cnpmjsorg_cnpm-files-volume
-$docker volume rm cnpmjsorg_cnpm-db-volume
-```
+1. 如果用户注册成功，继续在你的node项目目录中执行`cnpm publish`上传你的私包到私服
+2. 可以在其他目录试试`cnpm install 你刚上传的包名` 来安装你刚刚下载的私包
 
-You can get more information about your data volumes using the below commands:
+>祝顺利
 
-```bash
-$docker volume ls  // list all of your Docker volume
-$docker volume inspect cnpmjsorg_cnpm-files-volume
-$docker volume inspect cnpmjsorg_cnpm-db-volume
-```
 
-## How to contribute
 
-* Clone the project
-* Checkout a new branch
-* Add new features or fix bugs in the new branch
-* Make a pull request and we will review it ASAP
-
-Tips: make sure your code is following the [node-style-guide](https://github.com/felixge/node-style-guide).
-
-## Sponsors
-
-- [![阿里云](https://static.aliyun.com/images/www-summerwind/logo.gif)](http://click.aliyun.com/m/4288/) (2016.2 - now)
-- [![UCloud云计算](https://www.ucloud.cn/static/style/images/about/logo.png)](http://www.ucloud.cn?sem=sdk-CNPMJS) (2015.3 - 2016.3)
-
-## License
-
-[MIT](LICENSE.txt)
+[淘宝cnpm项目github主页]:https://github.com/cnpm/cnpmjs.org
+[node、npm环境]:https://nodejs.org/en/download/
+[n模块]:https://www.npmjs.com/package/n
+[Mysql数据库]:https://dev.mysql.com/downloads/mysql/
