@@ -75,7 +75,6 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
     storage: path.join(dataDir, 'data.sqlite'),
     logging: !!process.env.SQL_DEBUG,
   }  
-  ```
   
 7. 修改配置文件中npm包存储路径，如下所示
 
@@ -84,6 +83,7 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
     	dir: '/你的CNPM项目文件夹在服务器中的路径/nfs'
   	}),
 	```
+	
 8. 修改配置文件中`registryHost: '服务器IP地址:7001'`  
 9. 配置文件修改完毕之后在在终端输入`npm start`和`curl 服务器IP地址:7002`查看CNPM是否启动成功
 10. 浏览器中输入`服务器IP地址:7002`看看有没有CNPM页面
@@ -96,6 +96,7 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
 	mysql -uroot -pChinalife001! 'cnpm' < /你的CNPM项目文件夹在服务器中的路径/docs/db.sql &&\
 	mysql -uroot -pChinalife001! 'cnpm' -e 'show tables;'
 	```
+	
 13. 继续用上面的命令重启mysql
 14. 在CNPM项目目录下执行`npm restart`重启CNPM私服
 
@@ -123,12 +124,14 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
 	输入邮箱:123@qq.com
 	终端显示登录成功
 	```
+	
 2. 登录mysql执行以下代码查看用户是否创建成功
 	
 	```
 	use cnpm
 	select * from user;
 	```
+	
 	> 如果你的前面的操作都很顺利，CNPM.USER表中应该有test001的记录
 	
 ### 上传和安装私包
