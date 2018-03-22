@@ -76,6 +76,7 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
     logging: !!process.env.SQL_DEBUG,
   }  
   
+  
 7. 修改配置文件中npm包存储路径，如下所示
 
 	```
@@ -96,7 +97,6 @@ CNPM源码中默认写好的数据库是Sqlite3，但是这个数据库我没用
 	mysql -uroot -pChinalife001! 'cnpm' < /你的CNPM项目文件夹在服务器中的路径/docs/db.sql &&\
 	mysql -uroot -pChinalife001! 'cnpm' -e 'show tables;'
 	```
-	
 13. 继续用上面的命令重启mysql
 14. 在CNPM项目目录下执行`npm restart`重启CNPM私服
 
